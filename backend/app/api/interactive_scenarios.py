@@ -8,9 +8,13 @@ router = APIRouter()
 async def create_interactive_scenario(request: InteractiveScenarioRequest):
     """
     Generate an interactive learning scenario based on the provided parameters.
+    Returns the scenario text and detected educational resources.
     """
     try:
-        scenario = await generate_interactive_scenario(request)
-        return {"scenario": scenario}
+        result = await generate_interactive_scenario(request)
+        return {
+            "scenario": result["text"],
+            "resources": result["resources"]
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -11,6 +11,7 @@ from app.models.quizzes import QuizRequest
 from app.models.content_adaptation import ContentAdaptationRequest
 from app.models.interactive_scenarios import InteractiveScenarioRequest
 from app.models.feedback import FeedbackRequest
+from app.utils.hyperlink_processor import enrich_content_with_hyperlinks
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ else:
             logger.warning(f"Error connecting to Together API: {e}")
             MOCK_MODE = True
 
-DEFAULT_MODEL = "deepseek-ai/DeepSeek-V3"
+DEFAULT_MODEL = "meta-llama/Llama-3.2-3B-Instruct-Turbo"
 
 def call_together_api(prompt, max_tokens=1000):
     """
@@ -86,9 +87,10 @@ def call_together_api(prompt, max_tokens=1000):
         logger.error(f"Error calling Together API: {e}")
         return None
 
-async def generate_lesson_plan(request: LessonPlanRequest) -> str:
+async def generate_lesson_plan(request: LessonPlanRequest) -> dict:
     """
     Generate a lesson plan using Llama Stack or Together API.
+    Returns a dictionary with the lesson plan text and detected resources.
     """
     prompt = f"""
     Create a detailed lesson plan for {request.grade_level} students on {request.subject}, 
@@ -110,11 +112,13 @@ async def generate_lesson_plan(request: LessonPlanRequest) -> str:
     8. Accommodations for struggling students
     
     Format the lesson plan in a structured, easy-to-follow format.
+    
+    IMPORTANT: Include specific educational resources (websites, books, videos, tools) that would be helpful for teaching this lesson. For each resource, provide a brief description of how it can be used.
     """
     
     if MOCK_MODE:
         logger.info(f"Generating mock lesson plan for {request.subject} - {request.topic}")
-        return f"""
+        mock_content = f"""
 
 Begin with a brief discussion about {request.topic} and its relevance to students' lives.
 
@@ -129,11 +133,15 @@ Summarize the main points and preview the next lesson.
 - Textbooks
 - Worksheets
 - Visual aids
+- Khan Academy videos on {request.topic}
+- Interactive simulations from PhET
+- "Understanding {request.subject}" by John Smith
 
 Additional challenging problems that extend the concepts learned.
 
 Simplified practice problems and additional one-on-one support.
 """
+        return enrich_content_with_hyperlinks(mock_content)
     
     try:
         response = client.inference.chat_completion(
@@ -142,22 +150,24 @@ Simplified practice problems and additional one-on-one support.
             ],
             model_id=DEFAULT_MODEL,
         )
-        return response.completion_message.content
+        content = response.completion_message.content
+        return enrich_content_with_hyperlinks(content)
     except Exception as e:
         logger.warning(f"Error using Llama Stack client: {e}")
         
         logger.info("Attempting to use Together API directly for lesson plan generation")
-        result = call_together_api(prompt, max_tokens=1500)
+        result = call_together_api(prompt, max_tokens=2000)
         
         if result:
-            return result
+            return enrich_content_with_hyperlinks(result)
         else:
             logger.error("Failed to generate lesson plan using both Llama Stack and Together API")
             raise Exception("Failed to generate lesson plan")
 
-async def generate_quiz(request: QuizRequest) -> str:
+async def generate_quiz(request: QuizRequest) -> dict:
     """
     Generate a quiz using Llama Stack or Together API.
+    Returns a dictionary with the quiz text and detected resources.
     """
     prompt = f"""
     Create a {request.num_questions}-question quiz on {request.subject}, 
@@ -173,11 +183,13 @@ async def generate_quiz(request: QuizRequest) -> str:
     4. Include a brief explanation of why the answer is correct
     
     Format the quiz in a structured way that's easy to parse.
+    
+    IMPORTANT: At the end of the quiz, include a "Further Resources" section with 2-3 specific educational resources (websites, books, videos) that students can use to learn more about this topic.
     """
     
     if MOCK_MODE:
         logger.info(f"Generating mock quiz for {request.subject} - {request.topic}")
-        return f"""
+        mock_content = f"""
 
 What is the main concept of {request.topic}?
 A) First option
@@ -198,7 +210,12 @@ D) Example four
 **Correct Answer: C**
 
 Explanation: Example three shows a practical application of {request.topic} in a real-world context.
+
+1. Khan Academy's "{request.topic} Explained" video series
+2. "Understanding {request.subject}" by Academic Press
+3. Interactive {request.topic} simulations on PhET website
 """
+        return enrich_content_with_hyperlinks(mock_content)
     
     try:
         response = client.inference.chat_completion(
@@ -207,22 +224,24 @@ Explanation: Example three shows a practical application of {request.topic} in a
             ],
             model_id=DEFAULT_MODEL,
         )
-        return response.completion_message.content
+        content = response.completion_message.content
+        return enrich_content_with_hyperlinks(content)
     except Exception as e:
         logger.warning(f"Error using Llama Stack client: {e}")
         
         logger.info("Attempting to use Together API directly for quiz generation")
-        result = call_together_api(prompt, max_tokens=1500)
+        result = call_together_api(prompt, max_tokens=2000)
         
         if result:
-            return result
+            return enrich_content_with_hyperlinks(result)
         else:
             logger.error("Failed to generate quiz using both Llama Stack and Together API")
             raise Exception("Failed to generate quiz")
 
-async def adapt_content(request: ContentAdaptationRequest) -> str:
+async def adapt_content(request: ContentAdaptationRequest) -> dict:
     """
     Adapt educational content using Llama Stack or Together API.
+    Returns a dictionary with the adapted content text and detected resources.
     """
     learning_style_prompt = ""
     if request.target_learning_style:
@@ -241,6 +260,8 @@ async def adapt_content(request: ContentAdaptationRequest) -> str:
     {request.content}
     
     Provide the adapted content in a clear, well-structured format.
+    
+    IMPORTANT: At the end of the adapted content, include a "Recommended Resources" section with 2-3 specific educational resources (websites, books, videos) that would help students better understand this content.
     """
     
     if MOCK_MODE:
@@ -248,12 +269,17 @@ async def adapt_content(request: ContentAdaptationRequest) -> str:
         learning_style_text = f" for {request.target_learning_style.value} learners" if request.target_learning_style else ""
         simplify_text = ", simplified" if request.simplify else ""
         
-        return f"""
+        mock_content = f"""
 
 {request.content[:50]}... [content adapted for {request.target_reading_level.value} reading level{learning_style_text}{simplify_text}]
 
 The content has been modified to use vocabulary and sentence structures appropriate for {request.target_reading_level.value} students.
+
+1. Khan Academy's interactive lessons on this topic
+2. "Simplified Guide to {request.content.split()[0:3]}" by Educational Press
+3. Visual learning videos on YouTube's educational channel
 """
+        return enrich_content_with_hyperlinks(mock_content)
     
     try:
         response = client.inference.chat_completion(
@@ -262,22 +288,24 @@ The content has been modified to use vocabulary and sentence structures appropri
             ],
             model_id=DEFAULT_MODEL,
         )
-        return response.completion_message.content
+        content = response.completion_message.content
+        return enrich_content_with_hyperlinks(content)
     except Exception as e:
         logger.warning(f"Error using Llama Stack client: {e}")
         
         logger.info("Attempting to use Together API directly for content adaptation")
-        result = call_together_api(prompt, max_tokens=1500)
+        result = call_together_api(prompt, max_tokens=2000)
         
         if result:
-            return result
+            return enrich_content_with_hyperlinks(result)
         else:
             logger.error("Failed to adapt content using both Llama Stack and Together API")
             raise Exception("Failed to adapt content")
 
-async def generate_interactive_scenario(request: InteractiveScenarioRequest) -> str:
+async def generate_interactive_scenario(request: InteractiveScenarioRequest) -> dict:
     """
     Generate an interactive learning scenario using Llama Stack or Together API.
+    Returns a dictionary with the scenario text and detected resources.
     """
     scenario_type_desc = {
         "role_playing": "a role-playing activity where students take on specific roles",
@@ -307,11 +335,14 @@ async def generate_interactive_scenario(request: InteractiveScenarioRequest) -> 
     4. Discussion questions
     5. Assessment criteria
     6. Extensions or variations
+    7. Additional resources and references
+    
+    IMPORTANT: Include a section at the end with 2-3 specific educational resources (websites, books, videos) that would help teachers implement this scenario effectively.
     """
     
     if MOCK_MODE:
         logger.info(f"Generating mock interactive scenario for {request.subject} - {request.topic}")
-        return f"""
+        mock_content = f"""
 
 This {request.scenario_type.value} activity engages students with {request.topic} through an interactive approach.
 
@@ -325,7 +356,12 @@ Students will explore {request.topic} by working in small groups to solve proble
 Students will be evaluated on their understanding of {request.topic} and their ability to apply the concepts.
 
 For advanced students, increase the complexity by adding additional constraints or challenges.
+
+1. TeachEngineering.org - Interactive lessons on {request.topic}
+2. "Classroom Activities for {request.subject}" by Educational Press
+3. PhET Interactive Simulations - Virtual labs related to {request.topic}
 """
+        return enrich_content_with_hyperlinks(mock_content)
     
     try:
         response = client.inference.chat_completion(
@@ -334,22 +370,24 @@ For advanced students, increase the complexity by adding additional constraints 
             ],
             model_id=DEFAULT_MODEL,
         )
-        return response.completion_message.content
+        content = response.completion_message.content
+        return enrich_content_with_hyperlinks(content)
     except Exception as e:
         logger.warning(f"Error using Llama Stack client: {e}")
         
         logger.info("Attempting to use Together API directly for interactive scenario generation")
-        result = call_together_api(prompt, max_tokens=1500)
+        result = call_together_api(prompt, max_tokens=2000)
         
         if result:
-            return result
+            return enrich_content_with_hyperlinks(result)
         else:
             logger.error("Failed to generate interactive scenario using both Llama Stack and Together API")
             raise Exception("Failed to generate interactive scenario")
 
-async def generate_feedback(request: FeedbackRequest) -> str:
+async def generate_feedback(request: FeedbackRequest) -> dict:
     """
     Generate feedback for student work using Llama Stack or Together API.
+    Returns a dictionary with the feedback text and detected resources.
     """
     tone_instructions = {
         "encouraging": "Be positive and encouraging, focusing on strengths while gently addressing areas for improvement.",
@@ -385,6 +423,8 @@ async def generate_feedback(request: FeedbackRequest) -> str:
     {sections_text}
     
     Format the feedback in a clear, structured way that will be helpful and motivating for the student.
+    
+    IMPORTANT: At the end of the feedback, include a "Recommended Learning Resources" section with 2-3 specific educational resources (websites, books, videos) that would help the student improve in the areas you've identified.
     """
     
     if MOCK_MODE:
@@ -406,7 +446,14 @@ Consider providing more detailed explanations and examples to support your point
 Review the key concepts of {request.subject} and practice applying them in different contexts. Consider seeking additional resources on this topic.
 """)
         
-        return "".join(feedback_sections)
+        feedback_sections.append(f"""
+1. Khan Academy's "{request.subject} for {request.grade_level}" series
+2. "Mastering {request.subject}" by Academic Press
+3. Interactive tutorials on {request.subject} at education.com
+""")
+        
+        mock_content = "".join(feedback_sections)
+        return enrich_content_with_hyperlinks(mock_content)
     
     try:
         response = client.inference.chat_completion(
@@ -415,15 +462,16 @@ Review the key concepts of {request.subject} and practice applying them in diffe
             ],
             model_id=DEFAULT_MODEL,
         )
-        return response.completion_message.content
+        content = response.completion_message.content
+        return enrich_content_with_hyperlinks(content)
     except Exception as e:
         logger.warning(f"Error using Llama Stack client: {e}")
         
         logger.info("Attempting to use Together API directly for feedback generation")
-        result = call_together_api(prompt, max_tokens=1500)
+        result = call_together_api(prompt, max_tokens=2000)
         
         if result:
-            return result
+            return enrich_content_with_hyperlinks(result)
         else:
             logger.error("Failed to generate feedback using both Llama Stack and Together API")
             raise Exception("Failed to generate feedback")

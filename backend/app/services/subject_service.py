@@ -7,14 +7,14 @@ from app.models.subjects import SubjectRequest, CurriculumRequest, StudentKnowle
 
 load_dotenv()
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
-DEFAULT_MODEL = "deepseek-ai/DeepSeek-V3"
+DEFAULT_MODEL = "meta-llama/Llama-3.2-3B-Instruct-Turbo"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MOCK_MODE = not TOGETHER_API_KEY or TOGETHER_API_KEY == "your_api_key_here"
 
-def call_together_api(prompt, max_tokens=8192):
+def call_together_api(prompt, max_tokens=1500):
     """
     Call Together API directly for subject-specific content generation
     """
@@ -101,7 +101,7 @@ async def generate_subject_resources(request: SubjectRequest) -> str:
 2. **Stack Exchange** - Q&A platform for specific problems and concepts.
 """
     
-    result = call_together_api(prompt, max_tokens=8192)
+    result = call_together_api(prompt, max_tokens=1500)
     
     if result:
         return result
@@ -130,7 +130,7 @@ async def generate_curriculum(request: CurriculumRequest) -> str:
     
     if MOCK_MODE:
         logger.info(f"Generating mock curriculum for {request.subject_type.value} at {request.level.value} level")
-        return f"""
+        result = f"""
 
 **Learning Objectives:**
 - Understand basic principles of {request.subject_type.value}
@@ -156,14 +156,16 @@ async def generate_curriculum(request: CurriculumRequest) -> str:
 - Hands-on practice
 - Problem-solving exercises
 
-
 """
-    + (f"\n\n## Assessments:\n- Weekly quizzes\n- Mid-term project\n- Final examination" if request.include_assessments else "")
-    + (f"\n\n## Additional Resources:\n- Supplementary readings\n- Online tools and simulators\n- Video tutorials" if request.include_resources else "")
-    + """
-"""
+        if request.include_assessments:
+            result += f"\n\n## Assessments:\n- Weekly quizzes\n- Mid-term project\n- Final examination"
+        
+        if request.include_resources:
+            result += f"\n\n## Additional Resources:\n- Supplementary readings\n- Online tools and simulators\n- Video tutorials"
+            
+        return result
     
-    result = call_together_api(prompt, max_tokens=8192)
+    result = call_together_api(prompt, max_tokens=2000)
     
     if result:
         return result
@@ -237,7 +239,7 @@ Since you already know {request.topics_known[0] if request.topics_known else "so
 - Comprehensive review project
 """
     
-    result = call_together_api(prompt, max_tokens=8192)
+    result = call_together_api(prompt, max_tokens=1500)
     
     if result:
         return result

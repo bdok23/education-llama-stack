@@ -8,9 +8,13 @@ router = APIRouter()
 async def create_quiz(request: QuizRequest):
     """
     Generate a quiz based on the provided parameters.
+    Returns the quiz text and detected educational resources.
     """
     try:
-        quiz = await generate_quiz(request)
-        return {"quiz": quiz}
+        result = await generate_quiz(request)
+        return {
+            "quiz": result["text"],
+            "resources": result["resources"]
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

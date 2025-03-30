@@ -1,6 +1,6 @@
 
 const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:8000' 
+  ? 'http://localhost:8321' 
   : 'https://api.education-content-generator.com';
 
 function showLoading(formId, buttonText = 'Generating...') {
@@ -17,7 +17,7 @@ function hideLoading(formId, buttonText = 'Generate') {
     submitButton.disabled = false;
 }
 
-function showResult(resultId, content) {
+function showResult(resultId, content, resources = []) {
     console.log(`showResult called with resultId: ${resultId}`);
     
     const resultContainer = document.getElementById(resultId);
@@ -69,6 +69,42 @@ function showResult(resultId, content) {
         
         copyButtonContainer.appendChild(copyButton);
         resultContainer.insertBefore(copyButtonContainer, resultContainer.firstChild);
+        
+        if (resources && resources.length > 0) {
+            const resourcesSection = document.createElement('div');
+            resourcesSection.className = 'resources-section';
+            resourcesSection.innerHTML = '<h3><i class="fas fa-link"></i> Educational Resources</h3>';
+            
+            const resourcesList = document.createElement('ul');
+            resourcesList.className = 'resources-list';
+            
+            resources.forEach(resource => {
+                const [name, url] = resource;
+                const listItem = document.createElement('li');
+                listItem.className = 'resource-item';
+                
+                let icon = 'fas fa-external-link-alt';
+                if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    icon = 'fab fa-youtube';
+                } else if (url.includes('google.com/search')) {
+                    icon = 'fas fa-search';
+                } else if (url.includes('wikipedia.org')) {
+                    icon = 'fab fa-wikipedia-w';
+                } else if (url.includes('khanacademy.org')) {
+                    icon = 'fas fa-graduation-cap';
+                } else if (url.includes('pdf')) {
+                    icon = 'fas fa-file-pdf';
+                } else if (url.includes('book') || url.includes('books.google')) {
+                    icon = 'fas fa-book';
+                }
+                
+                listItem.innerHTML = `<a href="${url}" target="_blank" class="resource-link"><i class="${icon}"></i> ${name}</a>`;
+                resourcesList.appendChild(listItem);
+            });
+            
+            resourcesSection.appendChild(resourcesList);
+            contentContainer.parentNode.insertBefore(resourcesSection, contentContainer.nextSibling);
+        }
         
         contentContainer.innerHTML = content;
         contentContainer.classList.add('fade-in');
@@ -266,6 +302,7 @@ document.getElementById('subject-resources-form').addEventListener('submit', asy
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'omit',
             body: JSON.stringify(requestData)
         });
         
@@ -277,7 +314,7 @@ document.getElementById('subject-resources-form').addEventListener('submit', asy
         
         const formattedContent = formatOutputWithStyles(data.resources, 'resources');
         
-        showResult('subject-resources-result', formattedContent);
+        showResult('subject-resources-result', formattedContent, data.resource_links || []);
     } catch (error) {
         console.error('Error generating subject resources:', error);
         alert(`Error generating subject resources: ${error.message}`);
@@ -311,6 +348,7 @@ document.getElementById('curriculum-form').addEventListener('submit', async (e) 
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'omit',
             body: JSON.stringify(requestData)
         });
         
@@ -322,7 +360,7 @@ document.getElementById('curriculum-form').addEventListener('submit', async (e) 
         
         const formattedContent = formatOutputWithStyles(data.curriculum, 'curriculum');
         
-        showResult('curriculum-result', formattedContent);
+        showResult('curriculum-result', formattedContent, data.resources || []);
     } catch (error) {
         console.error('Error generating curriculum:', error);
         alert(`Error generating curriculum: ${error.message}`);
@@ -357,6 +395,7 @@ document.getElementById('personalized-path-form').addEventListener('submit', asy
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'omit',
             body: JSON.stringify(requestData)
         });
         
@@ -368,7 +407,7 @@ document.getElementById('personalized-path-form').addEventListener('submit', asy
         
         const formattedContent = formatOutputWithStyles(data.learning_path, 'path');
         
-        showResult('personalized-path-result', formattedContent);
+        showResult('personalized-path-result', formattedContent, data.resources || []);
     } catch (error) {
         console.error('Error generating personalized learning path:', error);
         alert(`Error generating personalized learning path: ${error.message}`);
@@ -402,6 +441,7 @@ document.getElementById('lesson-plan-form').addEventListener('submit', async (e)
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'omit',
             body: JSON.stringify(requestData)
         });
         
@@ -413,7 +453,7 @@ document.getElementById('lesson-plan-form').addEventListener('submit', async (e)
         
         const formattedContent = formatOutputWithStyles(data.lesson_plan, 'lesson-plan');
         
-        showResult('lesson-plan-result', formattedContent);
+        showResult('lesson-plan-result', formattedContent, data.resources || []);
     } catch (error) {
         console.error('Error generating lesson plan:', error);
         alert(`Error generating lesson plan: ${error.message}`);
@@ -457,6 +497,7 @@ document.getElementById('quiz-form').addEventListener('submit', async (e) => {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'omit',
             body: JSON.stringify(requestData)
         });
         
@@ -468,7 +509,7 @@ document.getElementById('quiz-form').addEventListener('submit', async (e) => {
         
         const formattedContent = formatOutputWithStyles(data.quiz, 'quiz');
         
-        showResult('quiz-result', formattedContent);
+        showResult('quiz-result', formattedContent, data.resources || []);
     } catch (error) {
         console.error('Error generating quiz:', error);
         alert(`Error generating quiz: ${error.message}`);
@@ -503,6 +544,7 @@ document.getElementById('adaptation-form').addEventListener('submit', async (e) 
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'omit',
             body: JSON.stringify(requestData)
         });
         
@@ -514,7 +556,7 @@ document.getElementById('adaptation-form').addEventListener('submit', async (e) 
         
         const formattedContent = formatOutputWithStyles(data.adapted_content, 'adaptation');
         
-        showResult('adaptation-result', formattedContent);
+        showResult('adaptation-result', formattedContent, data.resources || []);
     } catch (error) {
         console.error('Error adapting content:', error);
         alert(`Error adapting content: ${error.message}`);
@@ -556,6 +598,7 @@ document.getElementById('scenario-form').addEventListener('submit', async (e) =>
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'omit',
             body: JSON.stringify(requestData)
         });
         
@@ -567,7 +610,7 @@ document.getElementById('scenario-form').addEventListener('submit', async (e) =>
         
         const formattedContent = formatOutputWithStyles(data.scenario, 'scenario');
         
-        showResult('scenario-result', formattedContent);
+        showResult('scenario-result', formattedContent, data.resources || []);
     } catch (error) {
         console.error('Error generating scenario:', error);
         alert(`Error generating scenario: ${error.message}`);
@@ -609,6 +652,7 @@ document.getElementById('feedback-form').addEventListener('submit', async (e) =>
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'omit',
             body: JSON.stringify(requestData)
         });
         
@@ -620,7 +664,7 @@ document.getElementById('feedback-form').addEventListener('submit', async (e) =>
         
         const formattedContent = formatOutputWithStyles(data.feedback, 'feedback');
         
-        showResult('feedback-result', formattedContent);
+        showResult('feedback-result', formattedContent, data.resources || []);
     } catch (error) {
         console.error('Error generating feedback:', error);
         alert(`Error generating feedback: ${error.message}`);

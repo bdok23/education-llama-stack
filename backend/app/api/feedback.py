@@ -8,9 +8,13 @@ router = APIRouter()
 async def create_feedback(request: FeedbackRequest):
     """
     Generate feedback for student work based on the provided parameters.
+    Returns the feedback text and detected educational resources.
     """
     try:
-        feedback = await generate_feedback(request)
-        return {"feedback": feedback}
+        result = await generate_feedback(request)
+        return {
+            "feedback": result["text"],
+            "resources": result["resources"]
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

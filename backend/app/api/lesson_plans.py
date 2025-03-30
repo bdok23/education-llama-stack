@@ -8,9 +8,13 @@ router = APIRouter()
 async def create_lesson_plan(request: LessonPlanRequest):
     """
     Generate a lesson plan based on the provided parameters.
+    Returns the lesson plan text and detected educational resources.
     """
     try:
-        lesson_plan = await generate_lesson_plan(request)
-        return {"lesson_plan": lesson_plan}
+        result = await generate_lesson_plan(request)
+        return {
+            "lesson_plan": result["text"],
+            "resources": result["resources"]
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
