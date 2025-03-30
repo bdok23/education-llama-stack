@@ -1,7 +1,5 @@
 
-const API_BASE_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:8000' 
-  : 'https://api.education-content-generator.com';
+const API_BASE_URL = 'https://education-content-generator-tunnel-o43vvecs.devinapps.com';
 
 function showLoading(formId, buttonText = 'Generating...') {
     const form = document.getElementById(formId);
@@ -18,30 +16,9 @@ function hideLoading(formId, buttonText = 'Generate') {
 }
 
 function showResult(resultId, content) {
-    console.log(`showResult called with resultId: ${resultId}`);
-    
     const resultContainer = document.getElementById(resultId);
-    if (!resultContainer) {
-        console.error(`Result container not found: ${resultId}`);
-        return;
-    }
+    const contentContainer = document.getElementById(`${resultId}-content`);
     
-    let contentId;
-    if (resultId === 'lesson-plan-result') {
-        contentId = 'lesson-plan-content';
-    } else {
-        contentId = `${resultId.replace('-result', '')}-content`;
-    }
-    
-    console.log(`Looking for content container with ID: ${contentId}`);
-    const contentContainer = document.getElementById(contentId);
-    
-    if (!contentContainer) {
-        console.error(`Content container not found: ${contentId}`);
-        return;
-    }
-    
-    console.log('Setting innerHTML for content container');
     contentContainer.innerHTML = content;
     resultContainer.style.display = 'block';
     
@@ -248,17 +225,7 @@ document.getElementById('lesson-plan-form').addEventListener('submit', async (e)
         
         const formattedContent = data.lesson_plan.replace(/\n/g, '<br>');
         
-        const resultContainer = document.getElementById('lesson-plan-result');
-        const contentContainer = document.getElementById('lesson-plan-content');
-        
-        if (contentContainer) {
-            contentContainer.innerHTML = formattedContent;
-            resultContainer.style.display = 'block';
-            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-            console.error('Content container not found: lesson-plan-content');
-            alert('Error displaying result: Content container not found');
-        }
+        showResult('lesson-plan-result', formattedContent);
     } catch (error) {
         console.error('Error generating lesson plan:', error);
         alert(`Error generating lesson plan: ${error.message}`);

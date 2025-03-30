@@ -7,7 +7,7 @@ from app.models.subjects import SubjectRequest, CurriculumRequest, StudentKnowle
 
 load_dotenv()
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
-DEFAULT_MODEL = "meta-llama/Llama-3-70b-chat-hf"
+DEFAULT_MODEL = "meta-llama/Llama-3.2-3B-Instruct-Turbo"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -157,9 +157,10 @@ async def generate_curriculum(request: CurriculumRequest) -> str:
 - Problem-solving exercises
 
 
-{("## Assessments:\n- Weekly quizzes\n- Mid-term project\n- Final examination" if request.include_assessments else "")}
-
-{("## Additional Resources:\n- Supplementary readings\n- Online tools and simulators\n- Video tutorials" if request.include_resources else "")}
+"""
+    + (f"\n\n## Assessments:\n- Weekly quizzes\n- Mid-term project\n- Final examination" if request.include_assessments else "")
+    + (f"\n\n## Additional Resources:\n- Supplementary readings\n- Online tools and simulators\n- Video tutorials" if request.include_resources else "")
+    + """
 """
     
     result = call_together_api(prompt, max_tokens=2000)
