@@ -7,14 +7,14 @@ from app.models.subjects import SubjectRequest, CurriculumRequest, StudentKnowle
 
 load_dotenv()
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
-DEFAULT_MODEL = "meta-llama/Llama-3.2-3B-Instruct-Turbo"
+DEFAULT_MODEL = "deepseek-ai/DeepSeek-V3"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MOCK_MODE = not TOGETHER_API_KEY or TOGETHER_API_KEY == "your_api_key_here"
 
-def call_together_api(prompt, max_tokens=1500):
+def call_together_api(prompt, max_tokens=8192):
     """
     Call Together API directly for subject-specific content generation
     """
@@ -101,7 +101,7 @@ async def generate_subject_resources(request: SubjectRequest) -> str:
 2. **Stack Exchange** - Q&A platform for specific problems and concepts.
 """
     
-    result = call_together_api(prompt, max_tokens=1500)
+    result = call_together_api(prompt, max_tokens=8192)
     
     if result:
         return result
@@ -163,7 +163,7 @@ async def generate_curriculum(request: CurriculumRequest) -> str:
     + """
 """
     
-    result = call_together_api(prompt, max_tokens=2000)
+    result = call_together_api(prompt, max_tokens=8192)
     
     if result:
         return result
@@ -237,7 +237,7 @@ Since you already know {request.topics_known[0] if request.topics_known else "so
 - Comprehensive review project
 """
     
-    result = call_together_api(prompt, max_tokens=1500)
+    result = call_together_api(prompt, max_tokens=8192)
     
     if result:
         return result

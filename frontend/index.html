@@ -5,43 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Educational Content Generator</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Educational Content Generator</a>
+            <a class="navbar-brand" href="#"><i class="fas fa-graduation-cap"></i> Educational Content Generator</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
+                        <a class="nav-link active" href="#"><i class="fas fa-home"></i> Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#lesson-plans">Lesson Plans</a>
+                        <a class="nav-link" href="#lesson-plans"><i class="fas fa-book-open"></i> Lesson Plans</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#quizzes">Quizzes</a>
+                        <a class="nav-link" href="#quizzes"><i class="fas fa-question-circle"></i> Quizzes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#content-adaptation">Content Adaptation</a>
+                        <a class="nav-link" href="#content-adaptation"><i class="fas fa-sync-alt"></i> Content Adaptation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#interactive-scenarios">Interactive Scenarios</a>
+                        <a class="nav-link" href="#interactive-scenarios"><i class="fas fa-theater-masks"></i> Interactive Scenarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#feedback">Feedback</a>
+                        <a class="nav-link" href="#feedback"><i class="fas fa-comment"></i> Feedback</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#subject-resources">Subject Resources</a>
+                        <a class="nav-link" href="#subject-resources"><i class="fas fa-book"></i> Subject Resources</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#curriculum">Curriculum</a>
+                        <a class="nav-link" href="#curriculum"><i class="fas fa-calendar-alt"></i> Curriculum</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#personalized-path">Personalized Path</a>
+                        <a class="nav-link" href="#personalized-path"><i class="fas fa-route"></i> Personalized Path</a>
                     </li>
                 </ul>
             </div>
@@ -50,10 +52,24 @@
 
     <div class="container mt-4">
         <div class="jumbotron">
-            <h1 class="display-4">Welcome to Educational Content Generator</h1>
-            <p class="lead">Create personalized learning materials, quizzes, and explanations based on student needs and learning objectives.</p>
-            <hr class="my-4">
-            <p>Select a tool below to get started.</p>
+            <div class="jumbotron-content">
+                <h1 class="display-4"><i class="fas fa-graduation-cap"></i> Educational Content Generator</h1>
+                <p class="lead">Create personalized learning materials, quizzes, and explanations based on student needs and learning objectives.</p>
+                <hr class="my-4">
+                <p>Empower your teaching with AI-generated educational resources</p>
+                <div class="jumbotron-icons">
+                    <div class="icon-circle"><i class="fas fa-book-open"></i></div>
+                    <div class="icon-circle"><i class="fas fa-question-circle"></i></div>
+                    <div class="icon-circle"><i class="fas fa-sync-alt"></i></div>
+                    <div class="icon-circle"><i class="fas fa-theater-masks"></i></div>
+                    <div class="icon-circle"><i class="fas fa-comment"></i></div>
+                    <div class="icon-circle"><i class="fas fa-route"></i></div>
+                </div>
+                <div class="mt-4">
+                    <a href="#lesson-plans" class="btn btn-primary btn-lg me-2"><i class="fas fa-magic me-2"></i>Start Creating</a>
+                    <a href="#" class="btn btn-outline-primary btn-lg"><i class="fas fa-info-circle me-2"></i>Learn More</a>
+                </div>
+            </div>
         </div>
 
         <div class="row mt-4">
@@ -93,11 +109,11 @@
                 <div class="card-body">
                     <form id="lesson-plan-form">
                         <div class="mb-3">
-                            <label for="subject" class="form-label">Subject</label>
+                            <label for="subject" class="form-label"><i class="fas fa-book"></i> Subject</label>
                             <input type="text" class="form-control" id="subject" required>
                         </div>
                         <div class="mb-3">
-                            <label for="grade-level" class="form-label">Grade Level</label>
+                            <label for="grade-level" class="form-label"><i class="fas fa-graduation-cap"></i> Grade Level</label>
                             <select class="form-select" id="grade-level" required>
                                 <option value="">Select Grade Level</option>
                                 <option value="elementary">Elementary School</option>
@@ -107,15 +123,15 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="topic" class="form-label">Topic</label>
+                            <label for="topic" class="form-label"><i class="fas fa-bookmark"></i> Topic</label>
                             <input type="text" class="form-control" id="topic" required>
                         </div>
                         <div class="mb-3">
-                            <label for="learning-objectives" class="form-label">Learning Objectives (one per line)</label>
+                            <label for="learning-objectives" class="form-label"><i class="fas fa-bullseye"></i> Learning Objectives (one per line)</label>
                             <textarea class="form-control" id="learning-objectives" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="duration" class="form-label">Duration (minutes)</label>
+                            <label for="duration" class="form-label"><i class="fas fa-clock"></i> Duration (minutes)</label>
                             <input type="number" class="form-control" id="duration" value="60" min="15" max="180" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Generate Lesson Plan</button>
@@ -142,15 +158,15 @@
                 <div class="card-body">
                     <form id="quiz-form">
                         <div class="mb-3">
-                            <label for="quiz-subject" class="form-label">Subject</label>
+                            <label for="quiz-subject" class="form-label"><i class="fas fa-book"></i> Subject</label>
                             <input type="text" class="form-control" id="quiz-subject" required>
                         </div>
                         <div class="mb-3">
-                            <label for="quiz-topic" class="form-label">Topic</label>
+                            <label for="quiz-topic" class="form-label"><i class="fas fa-bookmark"></i> Topic</label>
                             <input type="text" class="form-control" id="quiz-topic" required>
                         </div>
                         <div class="mb-3">
-                            <label for="difficulty" class="form-label">Difficulty (1-5)</label>
+                            <label for="difficulty" class="form-label"><i class="fas fa-chart-bar"></i> Difficulty (1-5)</label>
                             <input type="range" class="form-range" id="difficulty" min="1" max="5" value="3">
                             <div class="d-flex justify-content-between">
                                 <span>Easy</span>
@@ -159,11 +175,11 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="num-questions" class="form-label">Number of Questions</label>
+                            <label for="num-questions" class="form-label"><i class="fas fa-list-ol"></i> Number of Questions</label>
                             <input type="number" class="form-control" id="num-questions" value="10" min="1" max="20" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Question Types</label>
+                            <label class="form-label"><i class="fas fa-tasks"></i> Question Types</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="multiple_choice" id="multiple-choice" checked>
                                 <label class="form-check-label" for="multiple-choice">Multiple Choice</label>
@@ -201,11 +217,11 @@
                 <div class="card-body">
                     <form id="adaptation-form">
                         <div class="mb-3">
-                            <label for="original-content" class="form-label">Original Content</label>
+                            <label for="original-content" class="form-label"><i class="fas fa-file-alt"></i> Original Content</label>
                             <textarea class="form-control" id="original-content" rows="6" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="reading-level" class="form-label">Target Reading Level</label>
+                            <label for="reading-level" class="form-label"><i class="fas fa-layer-group"></i> Target Reading Level</label>
                             <select class="form-select" id="reading-level" required>
                                 <option value="">Select Reading Level</option>
                                 <option value="elementary">Elementary School</option>
@@ -215,7 +231,7 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="learning-style" class="form-label">Target Learning Style (Optional)</label>
+                            <label for="learning-style" class="form-label"><i class="fas fa-brain"></i> Target Learning Style (Optional)</label>
                             <select class="form-select" id="learning-style">
                                 <option value="">No Specific Style</option>
                                 <option value="visual">Visual</option>
@@ -252,11 +268,11 @@
                 <div class="card-body">
                     <form id="scenario-form">
                         <div class="mb-3">
-                            <label for="scenario-subject" class="form-label">Subject</label>
+                            <label for="scenario-subject" class="form-label"><i class="fas fa-book"></i> Subject</label>
                             <input type="text" class="form-control" id="scenario-subject" required>
                         </div>
                         <div class="mb-3">
-                            <label for="scenario-grade-level" class="form-label">Grade Level</label>
+                            <label for="scenario-grade-level" class="form-label"><i class="fas fa-graduation-cap"></i> Grade Level</label>
                             <select class="form-select" id="scenario-grade-level" required>
                                 <option value="">Select Grade Level</option>
                                 <option value="elementary">Elementary School</option>
@@ -266,11 +282,11 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="scenario-topic" class="form-label">Topic</label>
+                            <label for="scenario-topic" class="form-label"><i class="fas fa-bookmark"></i> Topic</label>
                             <input type="text" class="form-control" id="scenario-topic" required>
                         </div>
                         <div class="mb-3">
-                            <label for="scenario-type" class="form-label">Scenario Type</label>
+                            <label for="scenario-type" class="form-label"><i class="fas fa-theater-masks"></i> Scenario Type</label>
                             <select class="form-select" id="scenario-type" required>
                                 <option value="">Select Scenario Type</option>
                                 <option value="role_playing">Role Playing</option>
@@ -280,15 +296,15 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="scenario-objectives" class="form-label">Learning Objectives (one per line)</label>
+                            <label for="scenario-objectives" class="form-label"><i class="fas fa-bullseye"></i> Learning Objectives (one per line)</label>
                             <textarea class="form-control" id="scenario-objectives" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="scenario-duration" class="form-label">Duration (minutes)</label>
+                            <label for="scenario-duration" class="form-label"><i class="fas fa-clock"></i> Duration (minutes)</label>
                             <input type="number" class="form-control" id="scenario-duration" value="30" min="15" max="120" required>
                         </div>
                         <div class="mb-3">
-                            <label for="scenario-complexity" class="form-label">Complexity (1-5)</label>
+                            <label for="scenario-complexity" class="form-label"><i class="fas fa-chart-line"></i> Complexity (1-5)</label>
                             <input type="range" class="form-range" id="scenario-complexity" min="1" max="5" value="3">
                             <div class="d-flex justify-content-between">
                                 <span>Simple</span>

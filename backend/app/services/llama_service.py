@@ -46,7 +46,7 @@ else:
             logger.warning(f"Error connecting to Together API: {e}")
             MOCK_MODE = True
 
-DEFAULT_MODEL = "meta-llama/Llama-3.2-3B-Instruct-Turbo"
+DEFAULT_MODEL = "deepseek-ai/DeepSeek-V3"
 
 def call_together_api(prompt, max_tokens=1000):
     """
